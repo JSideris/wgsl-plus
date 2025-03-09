@@ -14,6 +14,11 @@
             --gray-color: #e0e0e0;
             --text-color: #333333;
             --code-bg: #282c34;
+            --code-comment: #6a9955;
+            --code-keyword: #569cd6;
+            --code-string: #ce9178;
+            --code-number: #b5cea8;
+            --code-directive: #c586c0;
         }
 
         * {
@@ -215,6 +220,31 @@
             overflow-x: auto;
             margin: 1.5rem 0;
             font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre;
+            line-height: 1.5;
+        }
+
+        /* Syntax highlighting */
+        .code-comment {
+            color: var(--code-comment);
+            font-style: italic;
+        }
+
+        .code-directive {
+            color: var(--code-directive);
+            font-weight: bold;
+        }
+
+        .code-keyword {
+            color: var(--code-keyword);
+        }
+
+        .code-string {
+            color: var(--code-string);
+        }
+        
+        .code-number {
+            color: var(--code-number);
         }
 
         /* Usage Section */
@@ -303,6 +333,13 @@
         }
 
         /* Responsive styles */
+        /* Responsive grid for preprocessor directives section */
+        @media (max-width: 960px) {
+            .features-grid[style] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
         @media (max-width: 768px) {
             .nav-menu {
                 position: fixed;
@@ -380,7 +417,7 @@
                 <a href="#installation" class="cta-button">Get Started</a>
                 <a href="https://github.com/JSideris/wgsl-plus" class="cta-button secondary">View on GitHub</a>
             </div>
-            <img src="/api/placeholder/1000/600" alt="WGSL-Plus flow diagram showing connections between WGSL, TypeScript, JavaScript, and WebGPU" class="hero-image">
+            <img src="/assets/img/wgsl-plus.drawio.svg" alt="WGSL-Plus flow diagram showing connections between WGSL, TypeScript, JavaScript, and WebGPU" class="hero-image">
         </div>
     </section>
 
@@ -427,11 +464,11 @@
             <h2 class="section-title">Installation</h2>
             <p>Install globally for easy access:</p>
             <div class="code-block">
-                npm install -g wgsl-plus
+npm install -g wgsl-plus
             </div>
             <p>Or use <code>npx</code> for one-off runs:</p>
             <div class="code-block">
-                npx wgsl-plus [options] &lt;input files&gt;
+npx wgsl-plus [options] &lt;input files&gt;
             </div>
         </div>
     </section>
@@ -441,7 +478,7 @@
             <h2 class="section-title">Basic Usage</h2>
             <h3>Command Syntax</h3>
             <div class="code-block">
-                wgsl-plus &lt;inputFiles...&gt; -o &lt;outputFile&gt; [--export-type &lt;type&gt;]
+wgsl-plus &lt;inputFiles...&gt; -o &lt;outputFile&gt; [--export-type &lt;type&gt;]
             </div>
             <ul>
                 <li><code>&lt;inputFiles...&gt;</code>: One or more <code>.wgsl</code> files to process</li>
@@ -459,25 +496,25 @@
             
             <div class="tab-content active" id="wgsl-tab">
                 <div class="code-block">
-                    wgsl-plus input.wgsl -o output.wgsl
+wgsl-plus input.wgsl -o output.wgsl
                 </div>
             </div>
             
             <div class="tab-content" id="js-tab">
                 <div class="code-block">
-                    wgsl-plus a.wgsl b.wgsl -o output.js --export-type esm
+wgsl-plus a.wgsl b.wgsl -o output.js --export-type esm
                 </div>
             </div>
             
             <div class="tab-content" id="ts-tab">
                 <div class="code-block">
-                    wgsl-plus main.wgsl -o output.ts
+wgsl-plus main.wgsl -o output.ts
                 </div>
             </div>
             
             <div class="tab-content" id="help-tab">
                 <div class="code-block">
-                    wgsl-plus --help
+wgsl-plus --help
                 </div>
             </div>
         </div>
@@ -488,61 +525,64 @@
             <h2 class="section-title">Preprocessor Directives</h2>
             <p style="margin-bottom: 2rem; text-align: center;">WGSL-Plus supports both standard C-like preprocessor directives and custom WGSL-specific directives.</p>
             
-            <div class="features-grid">
+            <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));">
                 <div class="feature-card">
                     <h3 class="feature-title">File Inclusion</h3>
                     <div class="code-block">
-// Include another WGSL file relative to the current file
-#include "utils.wgsl"
+<span class="code-comment">// Include another WGSL file</span>
+<span class="code-comment">// relative to the current file</span>
+<span class="code-directive">#include</span> <span class="code-string">"utils.wgsl"</span>
                     </div>
                 </div>
                 
                 <div class="feature-card">
                     <h3 class="feature-title">Macro Definition</h3>
                     <div class="code-block">
-// Simple constant macro
-#define WIDTH 800
-#define HEIGHT 600
+<span class="code-comment">// Simple constant macro</span>
+<span class="code-directive">#define</span> WIDTH <span class="code-number">800</span>
+<span class="code-directive">#define</span> HEIGHT <span class="code-number">600</span>
 
-// Function-like macro
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+<span class="code-comment">// Function-like macro</span>
+<span class="code-directive">#define</span> MAX(a, b) ((a) > (b) ? (a) : (b))
 
-// Undefine a macro
-#undef WIDTH
+<span class="code-comment">// Undefine a macro</span>
+<span class="code-directive">#undef</span> WIDTH
                     </div>
                 </div>
                 
                 <div class="feature-card">
                     <h3 class="feature-title">Conditional Compilation</h3>
                     <div class="code-block">
-#ifdef ENABLE_SHADOWS
-  // Code included when ENABLE_SHADOWS is defined
-#endif
+<span class="code-directive">#ifdef</span> ENABLE_SHADOWS
+<span class="code-comment">// Code included when ENABLE_SHADOWS is defined</span>
+<span class="code-directive">#endif</span>
 
-#ifndef MOBILE_DEVICE
-  // Code included when MOBILE_DEVICE is not defined
-#endif
+<span class="code-directive">#ifndef</span> MOBILE_DEVICE
+<span class="code-comment">// Code included when MOBILE_DEVICE is not defined</span>
+<span class="code-directive">#endif</span>
 
-#if VERSION == 2
-  // Code for version 2
-#elif VERSION == 1
-  // Code for version 1
-#else
-  // Code for other versions
-#endif
+<span class="code-directive">#if</span> VERSION == <span class="code-number">2</span>
+<span class="code-comment">// Code for version 2</span>
+<span class="code-directive">#elif</span> VERSION == <span class="code-number">1</span>
+<span class="code-comment">// Code for version 1</span>
+<span class="code-directive">#else</span>
+<span class="code-comment">// Code for other versions</span>
+<span class="code-directive">#endif</span>
                     </div>
                 </div>
                 
                 <div class="feature-card">
                     <h3 class="feature-title">Shader Configuration</h3>
                     <div class="code-block">
-// Specify binding names (preserved during obfuscation)
-#binding "data"
-#binding "canvas_size"
+<span class="code-comment">// Specify binding names</span>
+<span class="code-comment">// (mappings given after obfuscation)</span>
+<span class="code-directive">#binding</span> <span class="code-string">"data"</span>
+<span class="code-directive">#binding</span> <span class="code-string">"canvas_size"</span>
 
-// Specify entry points (preserved during obfuscation)
-#entrypoint "vertex_main"
-#entrypoint "fragment_main"
+<span class="code-comment">// Specify entry points</span>
+<span class="code-comment">// (preserved during obfuscation)</span>
+<span class="code-directive">#entrypoint</span> <span class="code-string">"vertex_main"</span>
+<span class="code-directive">#entrypoint</span> <span class="code-string">"fragment_main"</span>
                     </div>
                 </div>
             </div>
@@ -566,10 +606,10 @@
             <div class="footer-column">
                 <h3>About</h3>
                 <ul class="footer-links">
-                    <li><a href="https://github.com/JSideris" class="footer-link">Joshua Sideris on GitHub</a></li>
                     <li><a href="https://x.com/joshsideris" class="footer-link">Joshua Sideris on X</a></li>
+                    <li><a href="https://github.com/JSideris" class="footer-link">Joshua Sideris on GitHub</a></li>
                     <li><a href="https://github.com/JSideris/wgsl-plus/issues" class="footer-link">Report Issues</a></li>
-                    <li><a href="https://github.com/JSideris/wgsl-plus#license" class="footer-link">License: MIT</a></li>
+                    <li><a href="https://github.com/JSideris/wgsl-plus/blob/master/LICENSE" class="footer-link">License: MIT</a></li>
                 </ul>
             </div>
         </div>
