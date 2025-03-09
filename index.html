@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WGSL-Plus | WebGPU Shader Language Preprocessor</title>
+    <style>
+        :root {
+            --primary-color: #574feb;
+            --secondary-color: #0078d4;
+            --accent-color: #ff9900;
+            --dark-color: #333333;
+            --light-color: #f8f9fa;
+            --gray-color: #e0e0e0;
+            --text-color: #333333;
+            --code-bg: #282c34;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-color);
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--secondary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--dark-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        .bar {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px auto;
+            background-color: var(--dark-color);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(to bottom, #f5f7fa, #e4e8f0);
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #555;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            margin: 2rem 0;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #4539d0;
+        }
+
+        .cta-button.secondary {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .cta-button.secondary:hover {
+            background-color: rgba(87, 79, 235, 0.1);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: var(--dark-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--light-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #555;
+        }
+
+        /* Installation Section */
+        .installation {
+            padding: 4rem 2rem;
+            background-color: var(--light-color);
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        /* Usage Section */
+        .usage {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+
+        .usage-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-color);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #777;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .tab-button:hover:not(.active) {
+            color: var(--dark-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 3rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-link {
+            color: #ccc;
+            text-decoration: none;
+            margin-bottom: 0.8rem;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #555;
+            color: #aaa;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 4.5rem;
+                flex-direction: column;
+                background-color: white;
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-item {
+                margin: 1.5rem 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .hamburger.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active .bar:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .hamburger.active .bar:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .cta-button {
+                display: block;
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <a href="#" class="logo">WGSL<span>Plus</span></a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="#installation" class="nav-link">Installation</a></li>
+                <li class="nav-item"><a href="#usage" class="nav-link">Usage</a></li>
+                <li class="nav-item"><a href="#examples" class="nav-link">Examples</a></li>
+                <li class="nav-item"><a href="https://github.com/JSideris/wgsl-plus" class="nav-link">GitHub</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">WGSL-Plus</h1>
+            <p class="hero-subtitle">A lightweight WGSL compiler with support for file linking, preprocessing, and multiple output formats for WebGPU shaders.</p>
+            <div class="cta-buttons">
+                <a href="#installation" class="cta-button">Get Started</a>
+                <a href="https://github.com/JSideris/wgsl-plus" class="cta-button secondary">View on GitHub</a>
+            </div>
+            <img src="/api/placeholder/1000/600" alt="WGSL-Plus flow diagram showing connections between WGSL, TypeScript, JavaScript, and WebGPU" class="hero-image">
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="section-container">
+            <h2 class="section-title">Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📂</div>
+                    <h3 class="feature-title">File Linking</h3>
+                    <p class="feature-description">Include other WGSL files in your shaders for better organization and reusability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3 class="feature-title">Preprocessing</h3>
+                    <p class="feature-description">C-like preprocessor with macros and conditional compilation for flexible shader variants.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📤</div>
+                    <h3 class="feature-title">Multi-Format Output</h3>
+                    <p class="feature-description">Build to WGSL, JavaScript, or TypeScript files from a single source.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">Code Optimization</h3>
+                    <p class="feature-description">Built-in obfuscator, minifier, and prettifier to adapt your code for any environment.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3 class="feature-title">Export Options</h3>
+                    <p class="feature-description">Choose between ESM (export) or CommonJS (module.exports) for JS/TS outputs.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">Error Handling</h3>
+                    <p class="feature-description">File validation and format checking to catch issues early.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="installation" class="installation">
+        <div class="section-container">
+            <h2 class="section-title">Installation</h2>
+            <p>Install globally for easy access:</p>
+            <div class="code-block">
+                npm install -g wgsl-plus
+            </div>
+            <p>Or use <code>npx</code> for one-off runs:</p>
+            <div class="code-block">
+                npx wgsl-plus [options] &lt;input files&gt;
+            </div>
+        </div>
+    </section>
+
+    <section id="usage" class="usage">
+        <div class="section-container">
+            <h2 class="section-title">Basic Usage</h2>
+            <h3>Command Syntax</h3>
+            <div class="code-block">
+                wgsl-plus &lt;inputFiles...&gt; -o &lt;outputFile&gt; [--export-type &lt;type&gt;]
+            </div>
+            <ul>
+                <li><code>&lt;inputFiles...&gt;</code>: One or more <code>.wgsl</code> files to process</li>
+                <li><code>-o, --output &lt;path&gt;</code>: Path to the output file (must be <code>.wgsl</code>, <code>.js</code>, or <code>.ts</code>)</li>
+                <li><code>--export-type &lt;type&gt;</code>: Export type for <code>.js</code> or <code>.ts</code> outputs (<code>esm</code> or <code>commonjs</code>)</li>
+            </ul>
+            
+            <h3 style="margin-top: 2rem;">Examples</h3>
+            <div class="usage-tabs">
+                <button class="tab-button active" data-tab="wgsl">Build to WGSL</button>
+                <button class="tab-button" data-tab="js">Build to JavaScript</button>
+                <button class="tab-button" data-tab="ts">Build to TypeScript</button>
+                <button class="tab-button" data-tab="help">Get Help</button>
+            </div>
+            
+            <div class="tab-content active" id="wgsl-tab">
+                <div class="code-block">
+                    wgsl-plus input.wgsl -o output.wgsl
+                </div>
+            </div>
+            
+            <div class="tab-content" id="js-tab">
+                <div class="code-block">
+                    wgsl-plus a.wgsl b.wgsl -o output.js --export-type esm
+                </div>
+            </div>
+            
+            <div class="tab-content" id="ts-tab">
+                <div class="code-block">
+                    wgsl-plus main.wgsl -o output.ts
+                </div>
+            </div>
+            
+            <div class="tab-content" id="help-tab">
+                <div class="code-block">
+                    wgsl-plus --help
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="examples" class="features">
+        <div class="section-container">
+            <h2 class="section-title">Preprocessor Directives</h2>
+            <p style="margin-bottom: 2rem; text-align: center;">WGSL-Plus supports both standard C-like preprocessor directives and custom WGSL-specific directives.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">File Inclusion</h3>
+                    <div class="code-block">
+// Include another WGSL file relative to the current file
+#include "utils.wgsl"
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3 class="feature-title">Macro Definition</h3>
+                    <div class="code-block">
+// Simple constant macro
+#define WIDTH 800
+#define HEIGHT 600
+
+// Function-like macro
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+// Undefine a macro
+#undef WIDTH
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3 class="feature-title">Conditional Compilation</h3>
+                    <div class="code-block">
+#ifdef ENABLE_SHADOWS
+  // Code included when ENABLE_SHADOWS is defined
+#endif
+
+#ifndef MOBILE_DEVICE
+  // Code included when MOBILE_DEVICE is not defined
+#endif
+
+#if VERSION == 2
+  // Code for version 2
+#elif VERSION == 1
+  // Code for version 1
+#else
+  // Code for other versions
+#endif
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3 class="feature-title">Shader Configuration</h3>
+                    <div class="code-block">
+// Specify binding names (preserved during obfuscation)
+#binding "data"
+#binding "canvas_size"
+
+// Specify entry points (preserved during obfuscation)
+#entrypoint "vertex_main"
+#entrypoint "fragment_main"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>WGSL-Plus</h3>
+                <p>A lightweight WGSL compiler with support for file linking, preprocessing, and multiple output formats.</p>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/JSideris/wgsl-plus" class="footer-link">GitHub Repository</a></li>
+                    <li><a href="https://www.npmjs.com/package/wgsl-plus" class="footer-link">NPM Package</a></li>
+                    <li><a href="https://www.npmjs.com/package/simple-compute-shaders" class="footer-link">Simple Compute Shaders</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>About</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/JSideris" class="footer-link">Joshua Sideris on GitHub</a></li>
+                    <li><a href="https://x.com/joshsideris" class="footer-link">Joshua Sideris on X</a></li>
+                    <li><a href="https://github.com/JSideris/wgsl-plus/issues" class="footer-link">Report Issues</a></li>
+                    <li><a href="https://github.com/JSideris/wgsl-plus#license" class="footer-link">License: MIT</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2025 Joshua Sideris. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Tabs functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and tabs
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Add active class to clicked button and corresponding tab
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
